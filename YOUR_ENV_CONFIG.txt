@@ -1,0 +1,16 @@
+# OpenAI Configuration
+# Get your API key from: https://platform.openai.com/api-keys
+# Then replace "your_openai_api_key_here" below with your actual key
+OPENAI_API_KEY=your_openai_api_key_here
+
+# PostgreSQL Database Configuration (Read-Only)
+DB_HOST=13.892.235.239
+DB_PORT=5942
+DB_USER=db_read_user
+DB_PASSWORD=qdk3adsg3m38yP
+DB_NAME=farmer_chat_mobile_app_dev
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+

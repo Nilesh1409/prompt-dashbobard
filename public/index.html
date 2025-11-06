@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Dashboard - AI Database Query</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI-Powered Database Dashboard</h1>
+            <p class="subtitle">Ask questions in natural language and get database insights</p>
+            <div class="status-bar">
+                <span id="status" class="status-indicator">⚫ Checking...</span>
+                <button id="refresh-schema" class="btn btn-secondary">🔄 Refresh Schema</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Query Input Section -->
+            <section class="query-section">
+                <h2>Ask Your Question</h2>
+                <div class="input-group">
+                    <textarea 
+                        id="prompt-input" 
+                        placeholder="Example: Show me all users who signed up in the last 30 days"
+                        rows="3"
+                    ></textarea>
+                    <button id="submit-query" class="btn btn-primary">
+                        <span class="btn-text">Execute Query</span>
+                        <span class="btn-loader" style="display: none;">⏳ Processing...</span>
+                    </button>
+                </div>
+                <div class="example-queries">
+                    <p><strong>Example queries:</strong></p>
+                    <div class="chips">
+                        <span class="chip" data-query="Show me the first 10 rows from the users table">Users table preview</span>
+                        <span class="chip" data-query="What are all the tables in the database?">List all tables</span>
+                        <span class="chip" data-query="Count total number of records in each table">Record counts</span>
+                        <span class="chip" data-query="Show me the database schema">Show schema</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabs for different views -->
+            <section class="tabs-section">
+                <div class="tabs">
+                    <button class="tab active" data-tab="results">📊 Results</button>
+                    <button class="tab" data-tab="sql">💻 Generated SQL</button>
+                    <button class="tab" data-tab="schema">📋 Database Schema</button>
+                    <button class="tab" data-tab="stats">📈 Statistics</button>
+                </div>
+
+                <!-- Results Tab -->
+                <div id="results-tab" class="tab-content active">
+                    <div id="results-container" class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <p>No results yet. Ask a question to get started!</p>
+                    </div>
+                </div>
+
+                <!-- SQL Tab -->
+                <div id="sql-tab" class="tab-content">
+                    <div class="sql-container">
+                        <div class="sql-header">
+                            <h3>Generated SQL Query</h3>
+                            <button id="copy-sql" class="btn btn-small">📋 Copy</button>
+                        </div>
+                        <pre id="sql-display"><code>-- No SQL generated yet</code></pre>
+                        <div id="explanation-display" class="explanation"></div>
+                    </div>
+                </div>
+
+                <!-- Schema Tab -->
+                <div id="schema-tab" class="tab-content">
+                    <div id="schema-container" class="schema-container">
+                        <div class="empty-state">
+                            <div class="empty-icon">⏳</div>
+                            <p>Loading schema...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Tab -->
+                <div id="stats-tab" class="tab-content">
+                    <div id="stats-container" class="stats-container">
+                        <div class="empty-state">
+                            <div class="empty-icon">⏳</div>
+                            <p>Loading statistics...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Query History -->
+            <section class="history-section">
+                <h2>Query History</h2>
+                <div id="history-container" class="history-container">
+                    <p class="empty-text">No query history yet</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Powered by OpenAI & PostgreSQL</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

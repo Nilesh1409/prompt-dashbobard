@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: rgb(229 231 235);
+  }
+
+  body {
+    @apply bg-white;
+    color: rgb(31 41 55);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+}
+
+@layer components {
+  /* Modern gradient background */
+  .modern-bg {
+    background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  }
+
+  /* Gemini-style card */
+  .gemini-card {
+    @apply bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  /* Chat message styles */
+  .message-user {
+    @apply bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-3xl px-6 py-4 shadow-lg;
+  }
+
+  .message-assistant {
+    @apply bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 rounded-3xl px-6 py-4 border border-gray-200;
+  }
+
+  /* Modern input */
+  .modern-input {
+    @apply w-full px-6 py-4 bg-white border-2 border-gray-200 rounded-3xl 
+           focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50
+           transition-all duration-200 resize-none;
+  }
+
+  /* Floating action button */
+  .fab {
+    @apply fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 
+           text-white rounded-full shadow-2xl hover:shadow-blue-500/50 hover:scale-110 
+           transition-all duration-300 flex items-center justify-center;
+  }
+
+  /* Shimmer effect */
+  .shimmer {
+    background: linear-gradient(90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.8) 50%, 
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Modern scrollbar */
+  .modern-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .modern-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .modern-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  }
+
+  /* Pulse animation */
+  .pulse-slow {
+    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Modern table */
+  .modern-table {
+    @apply w-full text-sm;
+  }
+
+  .modern-table thead th {
+    @apply px-6 py-4 text-left font-semibold text-gray-700 bg-gray-50 first:rounded-tl-2xl last:rounded-tr-2xl;
+  }
+
+  .modern-table tbody td {
+    @apply px-6 py-4 border-t border-gray-100;
+  }
+
+  .modern-table tbody tr:hover {
+    @apply bg-blue-50/30;
+  }
+
+  .modern-table tbody tr:last-child td:first-child {
+    @apply rounded-bl-2xl;
+  }
+
+  .modern-table tbody tr:last-child td:last-child {
+    @apply rounded-br-2xl;
+  }
+}
+

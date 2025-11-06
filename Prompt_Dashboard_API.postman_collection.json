@@ -1,0 +1,453 @@
+{
+	"info": {
+		"_postman_id": "prompt-dashboard-api",
+		"name": "Prompt Dashboard API",
+		"description": "Complete API collection for testing the AI-Powered Prompt Dashboard with PostgreSQL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"health"
+					]
+				},
+				"description": "Check server and database connection status"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Database Schema",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/schema",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"schema"
+					]
+				},
+				"description": "Get complete database schema with all tables and columns"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Database Statistics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/stats",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"stats"
+					]
+				},
+				"description": "Get database statistics including table sizes and row counts"
+			},
+			"response": []
+		},
+		{
+			"name": "Natural Language Query - List Tables",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prompt\": \"Show me all tables in the database\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"query"
+					]
+				},
+				"description": "Convert natural language to SQL and execute - List all tables"
+			},
+			"response": []
+		},
+		{
+			"name": "Natural Language Query - Count Records",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prompt\": \"Count the total number of records in each table\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"query"
+					]
+				},
+				"description": "Get row count for all tables using natural language"
+			},
+			"response": []
+		},
+		{
+			"name": "Natural Language Query - Show Schema",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prompt\": \"What is the database schema?\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"query"
+					]
+				},
+				"description": "Get schema information using natural language"
+			},
+			"response": []
+		},
+		{
+			"name": "Natural Language Query - Recent Data",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prompt\": \"Show me data created in the last 30 days\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"query"
+					]
+				},
+				"description": "Query recent data using natural language"
+			},
+			"response": []
+		},
+		{
+			"name": "Natural Language Query - Custom Query",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"prompt\": \"Your custom question here\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"query"
+					]
+				},
+				"description": "Template for your custom natural language queries"
+			},
+			"response": []
+		},
+		{
+			"name": "Execute SQL - List Tables",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sql\": \"SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"execute"
+					]
+				},
+				"description": "Execute raw SQL query to list all tables"
+			},
+			"response": []
+		},
+		{
+			"name": "Execute SQL - Get Table Columns",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sql\": \"SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position LIMIT 50\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"execute"
+					]
+				},
+				"description": "Execute raw SQL to get column information"
+			},
+			"response": []
+		},
+		{
+			"name": "Execute SQL - Count Rows in Table",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sql\": \"SELECT schemaname, tablename, n_live_tup as row_count FROM pg_stat_user_tables ORDER BY n_live_tup DESC\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"execute"
+					]
+				},
+				"description": "Execute SQL to count rows in all tables"
+			},
+			"response": []
+		},
+		{
+			"name": "Execute SQL - Current Time",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sql\": \"SELECT NOW() as current_time, version() as postgres_version\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"execute"
+					]
+				},
+				"description": "Simple query to test database connection"
+			},
+			"response": []
+		},
+		{
+			"name": "Execute SQL - Custom Query",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sql\": \"SELECT * FROM your_table LIMIT 10\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"execute"
+					]
+				},
+				"description": "Template for your custom SQL queries"
+			},
+			"response": []
+		},
+		{
+			"name": "Error Test - Missing Prompt",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"query"
+					]
+				},
+				"description": "Test error handling - should return 400 error"
+			},
+			"response": []
+		},
+		{
+			"name": "Error Test - Invalid SQL",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sql\": \"SELECT * FORM invalid_syntax\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"execute"
+					]
+				},
+				"description": "Test error handling for invalid SQL syntax"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
+
