@@ -4,8 +4,9 @@ const bodyParser = require('body-parser');
 const path = require('path');
 require('dotenv').config();
 
-const { testConnection } = require('./config/database');
+const { testConnection, pool } = require('./config/database');
 const { generateSQL, explainQuery } = require('./services/openaiService');
+const { generateSQLWithCorrection, explainResults } = require('./services/enhancedOpenAIService');
 const { getSchemaInfo, executeQuery, getTableStats } = require('./services/mcpService');
 
 const app = express();
@@ -63,7 +64,7 @@ app.get('/api/stats', async (req, res) => {
 // Main prompt endpoint - convert natural language to SQL and execute
 app.post('/api/query', async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt, useEnhanced = true } = req.body;
 
     if (!prompt) {
       return res.status(400).json({
@@ -72,47 +73,85 @@ app.post('/api/query', async (req, res) => {
       });
     }
 
-    // Get schema information
-    const schema = await getSchemaInfo();
+    console.log('📝 User prompt:', prompt);
+    console.log('🎯 Using enhanced mode:', useEnhanced);
 
-    // console.log('info:/api/query Schema:', schema.formatted);
+    if (useEnhanced) {
+      // ✨ Enhanced mode with self-correction and smart table selection
+      const result = await generateSQLWithCorrection(pool, prompt);
 
-    // Generate SQL from prompt using OpenAI
-    const sqlQuery = await generateSQL(prompt, schema.formatted);
+      if (!result.success) {
+        return res.status(400).json({
+          success: false,
+          error: result.error,
+          generatedSQL: result.sql,
+          attempts: result.attempts,
+          totalTime: result.totalTime,
+          message: `Failed to generate valid SQL query after ${result.attempts} attempts`
+        });
+      }
 
-    console.log('info:/api/query SQL Query:', sqlQuery);
+      // Get natural language explanation
+      const explanation = await explainResults(prompt, result.sql, result.rows);
 
-    // Execute the generated SQL
-    const result = await executeQuery(sqlQuery);
+      res.json({
+        success: true,
+        prompt,
+        generatedSQL: result.sql,
+        explanation,
+        results: {
+          rows: result.rows,
+          rowCount: result.rowCount,
+          executionTime: result.executionTime,
+          fields: result.fields
+        },
+        metadata: {
+          attempts: result.attempts,
+          relevantTables: result.relevantTables,
+          totalTime: result.totalTime,
+          enhanced: true
+        }
+      });
+    } else {
+      // Original mode (fallback)
+      const schema = await getSchemaInfo();
+      const sqlQuery = await generateSQL(prompt, schema.formatted);
 
-    console.log('info:/api/query Result:', result);
+      console.log('info:/api/query SQL Query:', sqlQuery);
 
-    if (!result.success) {
-      return res.status(400).json({
-        success: false,
-        error: result.error,
-        detail: result.detail,
-        generatedSQL: sqlQuery
+      const result = await executeQuery(sqlQuery);
+
+      console.log('info:/api/query Result:', result);
+
+      if (!result.success) {
+        return res.status(400).json({
+          success: false,
+          error: result.error,
+          detail: result.detail,
+          generatedSQL: sqlQuery
+        });
+      }
+
+      const explanation = await explainQuery(sqlQuery, result.rows);
+
+      res.json({
+        success: true,
+        prompt,
+        generatedSQL: sqlQuery,
+        explanation,
+        results: {
+          rows: result.rows,
+          rowCount: result.rowCount,
+          executionTime: result.executionTime,
+          fields: result.fields
+        },
+        metadata: {
+          enhanced: false
+        }
       });
     }
-
-    // Get explanation of the query and results
-    const explanation = await explainQuery(sqlQuery, result.rows);
-
-    res.json({
-      success: true,
-      prompt,
-      generatedSQL: sqlQuery,
-      explanation,
-      results: {
-        rows: result.rows,
-        rowCount: result.rowCount,
-        executionTime: result.executionTime,
-        fields: result.fields
-      }
-    });
   } catch (error) {
-    console.error('Error processing query:', error);
+    console.error('❌ Error processing query:', error);
     res.status(500).json({
       success: false,
       error: error.message
