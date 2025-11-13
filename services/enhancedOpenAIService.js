@@ -545,7 +545,7 @@ function validateSQLSemantics(sql, prompt, relevantTables) {
 /**
  * Generate SQL with self-correction mechanism
  */
-const generateSQLWithCorrection = async (pool, prompt, maxAttempts = 3) => {
+const generateSQLWithCorrection = async (pool, prompt, maxAttempts = 3, conversationHistory = []) => {
   const startTime = Date.now();
   
   try {
@@ -605,8 +605,24 @@ const generateSQLWithCorrection = async (pool, prompt, maxAttempts = 3) => {
     const focusedSchema = buildFocusedSchema(tables, primaryKeys, relationships, relevantTables, sampleData, distinctValues, resolvedDates);
     console.log('📝 Schema context size:', focusedSchema.length, 'characters');
     
+    // Step 6.5: Build conversation context from history (last 5 Q&A pairs)
+    let conversationContext = '';
+    if (conversationHistory && conversationHistory.length > 0) {
+      const recent = conversationHistory.slice(-5); // Last 5 conversations
+      conversationContext = '\n📜 RECENT CONVERSATION HISTORY (for context):\n\n';
+      recent.forEach((item, idx) => {
+        conversationContext += `Q${idx + 1}: "${item.question}"\n`;
+        conversationContext += `SQL${idx + 1}: ${item.sql}\n`;
+        if (item.rowCount !== undefined) {
+          conversationContext += `Result: ${item.rowCount} rows returned\n`;
+        }
+        conversationContext += '\n';
+      });
+      conversationContext += '💡 Use this context to understand follow-up questions or related queries.\n\n';
+    }
+    
     let lastError = null;
-    let conversationHistory = [];
+    let retryMessages = [];
     
     // Step 7: Iterative SQL generation with error correction
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -614,8 +630,7 @@ const generateSQLWithCorrection = async (pool, prompt, maxAttempts = 3) => {
       
       const systemPrompt = `You are an expert PostgreSQL database developer. Generate SQL queries based on the SCHEMA SNAPSHOT below.
 
-${focusedSchema}
-
+${focusedSchema}${conversationContext}
 ⚠️ STRICT RULES - Read Carefully:
 
 1. Use ONLY identifiers from SCHEMA SNAPSHOT. NO assumptions!
@@ -667,12 +682,12 @@ ${focusedSchema}
 ${lastError ? `\n⚠️ PREVIOUS ATTEMPT ${attempt - 1} FAILED:\n${lastError}\n\nFIX THIS ERROR:\n• Check column/table names exist in SCHEMA SNAPSHOT\n• Verify FK column names match FOREIGN KEYS section\n• Confirm PRIMARY KEY name (usually "id")\n• Check TIME COLUMNS for correct date field\n• Verify enum values match KNOWN VALUES\n` : ''}`;
 
       if (attempt === 1) {
-        conversationHistory = [
+        retryMessages = [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: prompt }
         ];
       } else {
-        conversationHistory.push({
+        retryMessages.push({
           role: 'user',
           content: `The previous query failed with error: "${lastError}". Please fix it. Original question: ${prompt}`
         });
@@ -680,7 +695,7 @@ ${lastError ? `\n⚠️ PREVIOUS ATTEMPT ${attempt - 1} FAILED:\n${lastError}\n\
       
       const response = await openai.chat.completions.create({
         model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
-        messages: conversationHistory,
+        messages: retryMessages,
         temperature: 0.1,
         max_tokens: 800
       });
@@ -702,7 +717,7 @@ ${lastError ? `\n⚠️ PREVIOUS ATTEMPT ${attempt - 1} FAILED:\n${lastError}\n\
         console.warn('⚠️  Semantic validation failed:', semanticIssues);
         lastError = `SEMANTIC VALIDATION FAILED:\n${semanticIssues.join('\n')}\n\nYour SQL does not match the user's intent. Please review the STRICT RULES above and fix the query.`;
         
-        conversationHistory.push({
+        retryMessages.push({
           role: 'assistant',
           content: sqlQuery
         });
@@ -744,7 +759,7 @@ ${lastError ? `\n⚠️ PREVIOUS ATTEMPT ${attempt - 1} FAILED:\n${lastError}\n\
         console.error(`❌ Execution error on attempt ${attempt}:`, execError.message);
         lastError = execError.message;
         
-        conversationHistory.push({
+        retryMessages.push({
           role: 'assistant',
           content: sqlQuery
         });

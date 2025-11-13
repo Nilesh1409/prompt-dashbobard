@@ -10,6 +10,14 @@ const api = axios.create({
   timeout: 30000,
 });
 
+export interface ConversationItem {
+  question: string;
+  sql: string;
+  rowCount?: number;
+  timestamp: number;
+  executionTime?: number;
+}
+
 export interface QueryResult {
   success: boolean;
   prompt?: string;
@@ -22,6 +30,12 @@ export interface QueryResult {
     fields: string[];
   };
   error?: string;
+  metadata?: {
+    attempts?: number;
+    relevantTables?: string[];
+    totalTime?: number;
+    enhanced?: boolean;
+  };
 }
 
 export interface SchemaResponse {
@@ -66,8 +80,11 @@ export const apiService = {
   },
 
   // Natural language query
-  async query(prompt: string): Promise<QueryResult> {
-    const response = await api.post<QueryResult>('/query', { prompt });
+  async query(prompt: string, conversationHistory: ConversationItem[] = []): Promise<QueryResult> {
+    const response = await api.post<QueryResult>('/query', { 
+      prompt,
+      conversationHistory: conversationHistory.slice(-5) // Send last 5 conversations
+    });
     return response.data;
   },
 

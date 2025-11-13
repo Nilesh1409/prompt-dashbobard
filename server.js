@@ -64,7 +64,7 @@ app.get('/api/stats', async (req, res) => {
 // Main prompt endpoint - convert natural language to SQL and execute
 app.post('/api/query', async (req, res) => {
   try {
-    const { prompt, useEnhanced = true } = req.body;
+    const { prompt, useEnhanced = true, conversationHistory = [] } = req.body;
 
     if (!prompt) {
       return res.status(400).json({
@@ -75,10 +75,11 @@ app.post('/api/query', async (req, res) => {
 
     console.log('📝 User prompt:', prompt);
     console.log('🎯 Using enhanced mode:', useEnhanced);
+    console.log('💬 Conversation history items:', conversationHistory.length);
 
     if (useEnhanced) {
       // ✨ Enhanced mode with self-correction and smart table selection
-      const result = await generateSQLWithCorrection(pool, prompt);
+      const result = await generateSQLWithCorrection(pool, prompt, 3, conversationHistory);
 
       if (!result.success) {
         return res.status(400).json({

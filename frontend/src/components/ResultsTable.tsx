@@ -3,16 +3,14 @@
 import { Database, Clock, CheckCircle } from 'lucide-react';
 
 interface ResultsTableProps {
-  data: {
-    rows: any[];
-    rowCount: number;
-    executionTime: number;
-    fields: string[];
-  };
+  rows: any[];
+  fields: string[];
+  rowCount?: number;
+  executionTime?: number;
 }
 
-export const ResultsTable = ({ data }: ResultsTableProps) => {
-  const { rows, rowCount, executionTime, fields } = data;
+export const ResultsTable = ({ rows, fields, rowCount, executionTime }: ResultsTableProps) => {
+  const actualRowCount = rowCount ?? rows.length;
 
   const formatValue = (value: any): string => {
     if (value === null || value === undefined) {
@@ -33,13 +31,15 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
       <div className="flex items-center gap-6 text-sm">
         <div className="flex items-center gap-2 text-gray-600">
           <CheckCircle className="h-4 w-4 text-green-500" />
-          <span className="font-medium">{rowCount}</span>
-          <span>{rowCount === 1 ? 'result' : 'results'}</span>
+          <span className="font-medium">{actualRowCount}</span>
+          <span>{actualRowCount === 1 ? 'result' : 'results'}</span>
         </div>
-        <div className="flex items-center gap-2 text-gray-600">
-          <Clock className="h-4 w-4 text-blue-500" />
-          <span className="font-medium">{executionTime}ms</span>
-        </div>
+        {executionTime !== undefined && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Clock className="h-4 w-4 text-blue-500" />
+            <span className="font-medium">{executionTime}ms</span>
+          </div>
+        )}
       </div>
 
       {/* Results */}
@@ -88,9 +88,9 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         </div>
       )}
 
-      {rowCount > rows.length && (
+      {actualRowCount > rows.length && (
         <p className="text-sm text-gray-500 text-center pt-2">
-          Showing {rows.length} of {rowCount} total results
+          Showing {rows.length} of {actualRowCount} total results
         </p>
       )}
     </div>
